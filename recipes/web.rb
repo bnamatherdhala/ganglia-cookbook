@@ -43,9 +43,16 @@ execute "Ensuring correct permissions for #{node[:ganglia][:web][:dir_name]}" do
   }
 end
 
-apache2_passwd node[:ganglia][:web][:username] do
-  password node[:ganglia][:web][:password]
-  action :add
+template "/etc/apache2/.passwds" do
+  cookbook "ganglia"
+  source "web/passwds.erb"
+  owner "root"
+  group "root"
+  mode 00644
+  variables(
+  :username => node[:ganglia][:web][:username],
+  :htdigest => node[:ganglia][:web][:htdigest]
+  )
 end
 
 template "/etc/apache2/sites-available/#{node[:ganglia][:web][:server_name]}-ssl" do
